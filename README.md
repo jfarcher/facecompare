@@ -10,7 +10,7 @@ A Python application that uses Face++ API to detect and compare faces in images,
 
 ## Overview
 
-This tool analyzes photographs to:
+This tool analyses photographs to:
 1. Detect faces in the image
 2. Generate face tokens using Face++ API
 3. Compare all faces with each other to find similarities
@@ -32,7 +32,7 @@ This tool analyzes photographs to:
 - OpenCV (`opencv-python`)
 - Requests
 - python-dotenv
-- Face++ API account
+- [Face++ API account](https://www.faceplusplus.com/)
 
 ## Installation
 
