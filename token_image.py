@@ -1,6 +1,8 @@
 import cv2
 import json
 import numpy as np
+import argparse
+from pathlib import Path
 
 def get_face_at_point(x, y, faces):
     """Return face index if (x,y) is inside a face rectangle"""
@@ -45,6 +47,9 @@ def mouse_callback(event, x, y, flags, param):
             for comp in comparisons:
                 if comp['face1']['number'] == clicked_face:
                     other_face = comp['face2']['number']
+                    # Check if other_face index is valid
+                    if other_face < 1 or other_face > len(face_data):
+                        continue
                     confidence = comp['confidence']
                     other_rect = face_data[other_face - 1]["face_rectangle"]
                     # Red for high similarity (>80%), otherwise green-red gradient
@@ -65,6 +70,9 @@ def mouse_callback(event, x, y, flags, param):
                     y_offset += 20
                 elif comp['face2']['number'] == clicked_face:
                     other_face = comp['face1']['number']
+                    # Check if other_face index is valid
+                    if other_face < 1 or other_face > len(face_data):
+                        continue
                     confidence = comp['confidence']
                     other_rect = face_data[other_face - 1]["face_rectangle"]
                     # Red for high similarity (>80%), otherwise green-red gradient
@@ -86,48 +94,65 @@ def mouse_callback(event, x, y, flags, param):
             
             cv2.imshow("Labeled Faces", image)
 
-# Load the image
-image_path = "IMG_0020.JPG"
-original_image = cv2.imread(image_path)
+def main():
+    # Setup argument parser
+    parser = argparse.ArgumentParser(description='Display face comparison results')
+    parser.add_argument('image_file', help='Path to the original image file')
+    args = parser.parse_args()
 
-# Load faces from face_tokens.json
-try:
-    with open('face_tokens.json', 'r') as f:
-        data = json.load(f)
-        faces = data["faces"]
-except FileNotFoundError:
-    print("Error: face_tokens.json file not found")
-    exit(1)
+    # Check if image file exists
+    if not Path(args.image_file).exists():
+        print(f"Error: Image file {args.image_file} not found")
+        exit(1)
 
-# Load comparison results
-try:
-    with open('face_comparison_results.json', 'r') as f:
-        comparison_data = json.load(f)
-        comparisons = comparison_data['comparisons']
-except FileNotFoundError:
-    comparisons = []
+    # Load the image
+    original_image = cv2.imread(args.image_file)
+    if original_image is None:
+        print(f"Error: Could not load image {args.image_file}")
+        exit(1)
 
-# Initial drawing of faces
-image = original_image.copy()
-for i, face in enumerate(faces, 1):
-    rect = face["face_rectangle"]
-    cv2.rectangle(image, 
-                 (rect["left"], rect["top"]), 
-                 (rect["left"] + rect["width"], rect["top"] + rect["height"]), 
-                 (0, 255, 0), 2)
-    cv2.putText(image, f"Face {i}", 
-                (rect["left"], rect["top"] - 10), 
-                cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
+    # Load faces from face_tokens.json
+    try:
+        with open('face_tokens.json', 'r') as f:
+            data = json.load(f)
+            faces = data["faces"]
+    except FileNotFoundError:
+        print("Error: face_tokens.json file not found")
+        exit(1)
 
-# Create window and set mouse callback
-cv2.imshow("Labeled Faces", image)
-param = {'faces': faces, 'comparisons': comparisons, 'image': original_image}
-cv2.setMouseCallback("Labeled Faces", mouse_callback, param)
+    # Load comparison results
+    try:
+        with open('face_comparison_results.json', 'r') as f:
+            comparison_data = json.load(f)
+            comparisons = comparison_data['comparisons']
+    except FileNotFoundError:
+        print("Error: face_comparison_results.json file not found")
+        exit(1)
 
-# Wait for key press
-while True:
-    key = cv2.waitKey(1) & 0xFF
-    if key == 27:  # ESC key
-        break
+    # Initial drawing of faces
+    image = original_image.copy()
+    for i, face in enumerate(faces, 1):
+        rect = face["face_rectangle"]
+        cv2.rectangle(image, 
+                     (rect["left"], rect["top"]), 
+                     (rect["left"] + rect["width"], rect["top"] + rect["height"]), 
+                     (0, 255, 0), 2)
+        cv2.putText(image, f"Face {i}", 
+                    (rect["left"], rect["top"] - 10), 
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
 
-cv2.destroyAllWindows()
+    # Create window and set mouse callback
+    cv2.imshow("Labeled Faces", image)
+    param = {'faces': faces, 'comparisons': comparisons, 'image': original_image}
+    cv2.setMouseCallback("Labeled Faces", mouse_callback, param)
+
+    # Wait for key press
+    while True:
+        key = cv2.waitKey(1) & 0xFF
+        if key == 27:  # ESC key
+            break
+
+    cv2.destroyAllWindows()
+
+if __name__ == "__main__":
+    main()

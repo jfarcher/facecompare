@@ -49,17 +49,28 @@ FACEPP_API_SECRET=your_api_secret
 
 ## Usage
 
-```
-python face_compare.py
-```
-This will generate a JSON file with the face tokens and comparison results so that you can use the interactive interface to explore the face relationships and only hit the Face++ API once.
+1. Create a `.env` file with your Face++ API credentials:
+   ```
+   FACEPP_API_KEY=your_api_key
+   FACEPP_API_SECRET=your_api_secret
+   ```
 
-## Interactive Interface
+2. Run the face comparison script:
+   ```bash
+   python face_compare.py path/to/your/image.jpg
+   ```
 
-```
-python token_image.py
-```
-This will open a window with the image and a list of faces. Click on a face to see its relationships.
+3. View the interactive comparison results:
+   ```bash
+   python token_image.py path/to/your/image.jpg
+   ```
+
+4. The interactive viewer will:
+   - Display all detected faces
+   - Allow you to click on any face to see its relationships
+   - Show similarity scores with color coding
+   - Press ESC to exit the viewer
+
 ## Output
 
 The tool will generate a JSON file with the face tokens and comparison results.

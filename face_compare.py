@@ -5,9 +5,54 @@ from pathlib import Path
 from datetime import datetime
 from dotenv import load_dotenv
 import os
+import sys
+import argparse
 
 # Load environment variables
 load_dotenv()
+
+# Setup argument parser
+parser = argparse.ArgumentParser(description='Detect and compare faces in an image')
+parser.add_argument('image_file', help='Path to the image file to analyze')
+args = parser.parse_args()
+
+# API credentials from environment variables
+API_KEY = os.getenv('FACEPP_API_KEY')
+API_SECRET = os.getenv('FACEPP_API_SECRET')
+
+if not API_KEY or not API_SECRET:
+    print("Error: API credentials not found in .env file")
+    exit(1)
+
+# Check if image file exists
+if not Path(args.image_file).exists():
+    print(f"Error: Image file {args.image_file} not found")
+    exit(1)
+
+# First step: Detect faces and get tokens
+detect_url = "https://api-us.faceplusplus.com/facepp/v3/detect"
+print("Detecting faces in image...")
+
+with open(args.image_file, 'rb') as img_file:
+    files = {'image_file': img_file}
+    data = {
+        "api_key": API_KEY,
+        "api_secret": API_SECRET,
+        "return_landmark": "0",
+        "return_attributes": "none"
+    }
+    try:
+        response = requests.post(detect_url, files=files, data=data)
+        response.raise_for_status()
+        faces_data = response.json()
+        
+        # Save face tokens to file
+        with open('face_tokens.json', 'w') as f:
+            json.dump(faces_data, f, indent=2)
+        print(f"Detected {len(faces_data['faces'])} faces and saved tokens to face_tokens.json")
+    except requests.exceptions.RequestException as e:
+        print(f"Error detecting faces: {e}")
+        exit(1)
 
 # Load face tokens from JSON file
 try:
@@ -20,14 +65,6 @@ except FileNotFoundError:
 
 compare_url = "https://api-us.faceplusplus.com/facepp/v3/compare"
 face_tokens = [face["face_token"] for face in faces]
-
-# API credentials from environment variables
-API_KEY = os.getenv('FACEPP_API_KEY')
-API_SECRET = os.getenv('FACEPP_API_SECRET')
-
-if not API_KEY or not API_SECRET:
-    print("Error: API credentials not found in .env file")
-    exit(1)
 
 # Check if results file exists
 results_file = 'face_comparison_results.json'
