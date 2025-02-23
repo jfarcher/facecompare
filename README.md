@@ -52,13 +52,14 @@ FACEPP_API_SECRET=your_api_secret
 ```
 python face_compare.py
 ```
+This will generate a JSON file with the face tokens and comparison results so that you can use the interactive interface to explore the face relationships and only hit the Face++ API once.
 
 ## Interactive Interface
 
 ```
 python token_image.py
 ```
-
+This will open a window with the image and a list of faces. Click on a face to see its relationships.
 ## Output
 
 The tool will generate a JSON file with the face tokens and comparison results.
