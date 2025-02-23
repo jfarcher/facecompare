@@ -2,10 +2,10 @@
 
 A Python application that uses Face++ API to detect and compare faces in images, with an interactive visualization tool.
 
-![Original Image](IMG_0020.JPG)
+![Original Image](assets/IMG_0020.JPG)
 *Original historical photograph*
 
-![Application Interface](output.png)
+![Application Interface](assets/output.png)
 *Interactive interface showing face comparisons*
 
 ## Overview
