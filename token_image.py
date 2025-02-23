@@ -32,7 +32,7 @@ def mouse_callback(event, x, y, flags, param):
                             color, 2)
                 cv2.putText(image, f"Face {i}", 
                            (rect["left"], rect["top"] - 10), 
-                           cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
+                           cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 255), 2)
 
             # Highlight selected face in blue
             selected_face = face_data[clicked_face - 1]

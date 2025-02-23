@@ -1,6 +1,6 @@
 # Face Comparison Tool
 
-A Python application that uses Face++ API to detect and compare faces in images, with an interactive visualization tool.
+A Python application that uses Face++ API to detect and compare faces in images, with an interactive visualization tool. The API usually detects similarities between faces to determine if they are the same person but in this instance its analysing all faces in a single image and based on the similarity score you can determine whether kinship exists between the faces, but YMMV.
 
 ![Original Image](assets/IMG_0020.JPG)
 *Original historical photograph*
