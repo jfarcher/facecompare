@@ -47,7 +47,13 @@ def mouse_callback(event, x, y, flags, param):
                     other_face = comp['face2']['number']
                     confidence = comp['confidence']
                     other_rect = face_data[other_face - 1]["face_rectangle"]
-                    color = (0, int(255 * (confidence/100)), 0)
+                    # Red for high similarity (>80%), otherwise green-red gradient
+                    if confidence > 80:
+                        color = (0, 0, 255)  # Pure red for high similarity
+                    else:
+                        green = int(255 * (confidence/100))
+                        red = int(255 * (1 - confidence/100))
+                        color = (0, green, red)
                     cv2.rectangle(image, 
                                 (other_rect["left"], other_rect["top"]), 
                                 (other_rect["left"] + other_rect["width"], 
@@ -55,13 +61,19 @@ def mouse_callback(event, x, y, flags, param):
                                 color, 2)
                     cv2.putText(image, f"Face {other_face}: {confidence:.1f}%", 
                               (10, y_offset), 
-                              cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
+                              cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
                     y_offset += 20
                 elif comp['face2']['number'] == clicked_face:
                     other_face = comp['face1']['number']
                     confidence = comp['confidence']
                     other_rect = face_data[other_face - 1]["face_rectangle"]
-                    color = (0, int(255 * (confidence/100)), 0)
+                    # Red for high similarity (>80%), otherwise green-red gradient
+                    if confidence > 80:
+                        color = (0, 0, 255)  # Pure red for high similarity
+                    else:
+                        green = int(255 * (confidence/100))
+                        red = int(255 * (1 - confidence/100))
+                        color = (0, green, red)
                     cv2.rectangle(image, 
                                 (other_rect["left"], other_rect["top"]), 
                                 (other_rect["left"] + other_rect["width"], 
@@ -69,7 +81,7 @@ def mouse_callback(event, x, y, flags, param):
                                 color, 2)
                     cv2.putText(image, f"Face {other_face}: {confidence:.1f}%", 
                               (10, y_offset), 
-                              cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
+                              cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
                     y_offset += 20
             
             cv2.imshow("Labeled Faces", image)
